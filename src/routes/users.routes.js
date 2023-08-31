@@ -1,18 +1,12 @@
 const { Router } = require("express");
-const UsersController = require("../controllers/usersControllers");
+
+const UsersController = require("../controllers/UsersControllers");
+
+const usersRoutes = Router();
+
 const usersController = new UsersController();
-const userRoutes = Router();
 
-// function myMiddleware(request, response, next) {
-//   console.log("Voce passou pelo middleware");
-//   if (!request.body.isAdmin) {
-//     return response.json({ message: "user unauthorized" });
-//   }
+usersRoutes.post("/", usersController.create);
+usersRoutes.put("/:id", usersController.update);
 
-//   next();
-// }
-
-userRoutes.post("/", usersController.create);
-userRoutes.put("/:id", usersController.update);
-
-module.exports = userRoutes;
+module.exports = usersRoutes;

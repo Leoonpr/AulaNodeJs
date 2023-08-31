@@ -1,9 +1,8 @@
-const AppError = require("../utils/AppError");
 const { hash, compare } = require("bcryptjs");
-
+const AppError = require("../utils/AppError");
 const sqliteConnection = require("../database/sqlite");
 
-class usersController {
+class UsersController {
   async create(request, response) {
     const { name, email, password } = request.body;
 
@@ -12,14 +11,15 @@ class usersController {
       "SELECT * FROM users WHERE email = (?)",
       [email]
     );
+
     if (checkUserExists) {
-      throw new AppError("Este email já está em uso");
+      throw new AppError("Este e-mail a esta em uso");
     }
 
     const hashedPassword = await hash(password, 8);
 
     await database.run(
-      "INSERT INTO users (name, email, password) VALUES(?, ?, ?)",
+      "INSERT INTO users (name, email, password) VALUES (?,?,?)",
       [name, email, hashedPassword]
     );
 
@@ -50,14 +50,14 @@ class usersController {
     user.email = email ?? user.email;
 
     if (password && !old_password) {
-      throw new AppError("Você precisa informar a senha antiga");
+      throw new AppError("Voce precisa inserir sua senha antiga");
     }
 
     if (password && old_password) {
       const checkOldPassword = await compare(old_password, user.password);
 
       if (!checkOldPassword) {
-        throw new AppError("A senha antiga nao esta correta");
+        throw new AppError("A senha antiga não confere");
       }
 
       user.password = await hash(password, 8);
@@ -68,21 +68,13 @@ class usersController {
     name = ?,
     email = ?,
     password = ?,
-    updated_at = DATETIME('now')
+    update_at = DATETIME('now')
     WHERE id = ?`,
       [user.name, user.email, user.password, id]
     );
 
-    return response.status(200).json();
+    return response.json();
   }
-
-  /*
-  index - get - para listar todos os registros
-  show - get - exibe um registro especifico
-  create - post - criar um registro
-  update - put - para atualizar um registro
-  delete - delete - para deletar um registro
-  */
 }
 
-module.exports = usersController;
+module.exports = UsersController;
